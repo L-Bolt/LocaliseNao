@@ -9,8 +9,7 @@ class CustomData(Dataset):
     def __init__(self, data_dir, transform=None):
         self.datadir = data_dir
         self.dataset = Solo(data_path=data_dir)
-        # self.dataset_iterator = [frame for frame in self.dataset.frames()]
-        self.dataset_iterator = list(self.dataset.frames())
+        self.dataset_iterator = list(itertools.islice(self.dataset.frames(), 1, None, 2))
         self.img_filename = "step1.camera.png"
         self.transform = transform
         self.captures = self.dataset.metadata.totalSequences
@@ -19,10 +18,8 @@ class CustomData(Dataset):
 
     def __getitem__(self, index):
         filename = os.path.join(self.datadir + f"/sequence.{index}", self.img_filename)
-        # capture = next(itertools.islice(self.dataset_iterator, (index * 2) + 1, None))
-        capture = self.dataset_iterator[ (index * 2) + 1]
+        capture = self.dataset_iterator[index]
         position = capture.captures[0].position
-
         image = Image.open(filename).convert("RGB")
 
         if self.transform:
